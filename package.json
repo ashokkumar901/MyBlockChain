@@ -7,9 +7,10 @@
     "test": "jest --watchAll",
     "dev-test": "nodemon dev-test",
     "start": "node ./app",
-    "dev": "nodemon ./app"
+    "dev": "nodemon ./app",
+    "build-client":"parcel build app/client/src/index.html --out-dir app/client/dist"
   },
-  "jest":{
+  "jest": {
     "testEnvironment": "node"
   },
   "keywords": [],
@@ -24,6 +25,9 @@
     "crypto-js": "^3.1.9-1",
     "elliptic": "^6.5.2",
     "express": "^4.17.1",
+    "parcel-bundler": "^1.12.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "uuid": "^3.4.0",
     "ws": "^7.2.1"
   }

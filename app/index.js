@@ -5,7 +5,7 @@ const P2pServer = require('./p2p-server');
 const Wallet = require('../wallet');
 const TransactionPool = require('../wallet/transaction-pool');
 const MINER = require('./miner');
-
+const path = require('path');
 const HTTP_PORT = process.env.HTTP_PORT || 3001;
 
 const app = express();
@@ -16,6 +16,7 @@ const p2pServer = new P2pServer(bc, tp);
 const miner = new MINER(bc, tp, wallet, p2pServer);
 
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.get('/blocks', (req, res) => {
     res.json(bc.chain);
@@ -47,6 +48,10 @@ app.post('/transact', (req, res) => {
 
 app.get('/public-key', (req, res) => {
     res.json({ publicKey: wallet.publicKey });
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
 
 app.listen(HTTP_PORT, () => console.log(`listening on port ${HTTP_PORT}`));
