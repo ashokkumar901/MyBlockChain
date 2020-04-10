@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 const Blockchain = require('../blockchain');
 const P2pServer = require('./p2p-server');
 const Wallet = require('../wallet');
@@ -16,6 +18,7 @@ const p2pServer = new P2pServer(bc, tp);
 const miner = new MINER(bc, tp, wallet, p2pServer);
 
 app.use(bodyParser.json());
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.get('/blocks', (req, res) => {
@@ -50,9 +53,51 @@ app.get('/public-key', (req, res) => {
     res.json({ publicKey: wallet.publicKey });
 });
 
+app.get('/wallet-info', (req, res) => {
+    res.json({ address: wallet.publicKey, balance: wallet.balance });
+});
+
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
+
+const walletFoo = new Wallet();
+const walletBar = new Wallet();
+
+const generateWalletTransaction = ({ wallet, recipient, amount }) => {
+    const transaction = wallet.createTransaction({
+        recipient, amount, chain: blockchain.chain
+    });
+
+    TransactionPool.updateOrAddTransaction(transaction);
+};
+
+const walletAction = () => generateWalletTransaction({
+    wallet, recipient: walletFoo.publicKey, amount: 5
+});
+
+const walletFooAction = () => generateWalletTransaction({
+    wallet: walletFoo, recipient: walletBar.publicKey, amount: 10
+});
+
+const walletBarAction = () => generateWalletTransaction({
+    wallet: walletBar, recipient: wallet.publicKey, amount: 15
+});
+
+for (let i = 0; i < 10; i++) {
+    if (i % 3 === 0) {
+        walletAction();
+        walletFooAction();
+    } else if (i % 3 === 1) {
+        walletAction();
+        walletBarAction();
+    } else {
+        walletFooAction();
+        walletBarAction();
+    }
+
+    miner.mine();
+}
 
 app.listen(HTTP_PORT, () => console.log(`listening on port ${HTTP_PORT}`));
 p2pServer.listen();
