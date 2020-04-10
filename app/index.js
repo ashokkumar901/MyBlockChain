@@ -64,24 +64,22 @@ app.get('*', (req, res) => {
 const walletFoo = new Wallet();
 const walletBar = new Wallet();
 
-const generateWalletTransaction = ({ wallet, recipient, amount }) => {
-    const transaction = wallet.createTransaction({
-        recipient, amount, chain: blockchain.chain
-    });
+const generateWalletTransaction = ({ wallet, recipient, bc, amount }) => {
+    const transaction = wallet.createTransaction(recipient, amount, bc, tp);
 
-    TransactionPool.updateOrAddTransaction(transaction);
+    tp.updateOrAddTransaction(transaction);
 };
 
 const walletAction = () => generateWalletTransaction({
-    wallet, recipient: walletFoo.publicKey, amount: 5
+    wallet, recipient: walletFoo.publicKey, bc: bc, amount: 5
 });
 
 const walletFooAction = () => generateWalletTransaction({
-    wallet: walletFoo, recipient: walletBar.publicKey, amount: 10
+    wallet: walletFoo, recipient: walletBar.publicKey, bc: bc, amount: 10
 });
 
 const walletBarAction = () => generateWalletTransaction({
-    wallet: walletBar, recipient: wallet.publicKey, amount: 15
+    wallet: walletBar, recipient: wallet.publicKey, bc: bc, amount: 15
 });
 
 for (let i = 0; i < 10; i++) {
