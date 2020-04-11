@@ -22,7 +22,8 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.get('/blocks', (req, res) => {
-    res.json(bc.chain);
+    console.log('chain',bc.chain);
+    res.json({ status: 200, chain: bc.chain });
 });
 
 app.post('/mine', (req, res) => {
