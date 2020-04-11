@@ -8,7 +8,7 @@ class App extends Component {
     };
 
     componentDidMount() {
-        fetch('http://localhost:3001/wallet-info')
+        fetch(`${document.location.origin}/wallet-info`)
             .then((response) => response.json()).
             then(json => this.setState({ walletInfo: json }));
     }

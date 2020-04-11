@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Transaction from './Transaction';
 import { Link } from 'react-router-dom';
+const POLL_INTERVAL_MS = 10000;
 
 class TransactionPool extends Component {
     state = {
@@ -8,7 +9,7 @@ class TransactionPool extends Component {
     };
 
     fetchTransactionPoolMap = () => {
-        fetch('http://localhost:3001/transactions')
+        fetch(`${document.location.origin}/transactions`)
             .then(response => response.json())
             .then(json => {
                 this.setState({
@@ -19,6 +20,15 @@ class TransactionPool extends Component {
 
     componentDidMount() {
         this.fetchTransactionPoolMap();
+
+        this.fetchTransactionPoolMapInterval = setInterval(
+            () => this.fetchTransactionPoolMap(),
+            POLL_INTERVAL_MS
+        );
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.fetchTransactionPoolMapInterval);
     }
 
     render() {
